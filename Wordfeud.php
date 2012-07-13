@@ -140,7 +140,7 @@ class Wordfeud
      */
     public function logOut()
     {
-        $this->session_id = NULL;
+        $this->sessionId = NULL;
     }
 
     /**
