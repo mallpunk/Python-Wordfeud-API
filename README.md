@@ -1,4 +1,4 @@
-PHP Wordfeud API
+Python Wordfeud API
 ================
 The Wordfeud-class helps you communicate with the Wordfeud API servers. I haven't tested all the methods yet and I'm sure there are some API methods I haven't discovered yet.
 

@@ -1,4 +1,8 @@
 from hashlib import sha1
+import requests
+
+USER_AGENT = "Python Wordfeud API 0.2"
+
 # Wordfeud API client
 # Based on PHP-Wordfeud-API (TODO url, attribution)
 class Wordfeud:
@@ -27,7 +31,13 @@ class Wordfeud:
     # @param boolean debug_mode Set to True to output debug information on each request
     #
     def __init__(self, session_id=None, accept_encoding=True, debug_mode=False):
-        self.session_id = session_id
+        self.session = requests.Session()
+        self.session.headers = {
+            "Accept": "application/json",
+            "User-Agent": USER_AGENT,
+        }
+        if session_id:
+            self.session.cookies['sessionid'] = session_id
         self.accept_encoding = accept_encoding
         self.debugMode = debug_mode
 
@@ -75,7 +85,7 @@ class Wordfeud:
     # @return string Wordfeud Session ID
     #
     def getSessionId(self):
-        return self.session_id
+        return self.session.cookies.get('sessionid', None)
 
     #
     # Change the Wordfeud Session ID, in other words:
@@ -85,8 +95,8 @@ class Wordfeud:
     # @return boolean True if the internal value has been changed; False otherwise
     #
     def setSessionId(self, session_id):
-        if session_id:
-            self.session_id = session_id
+        if session_id != self.session.cookies.get('sessionid', None):
+            self.session.cookies['sessionid'] = session_id
             return True
         else:
             return False
@@ -97,7 +107,8 @@ class Wordfeud:
     # calls until you login again.
     #
     def logOut(self):
-        self.session_id = None
+        self.session.close()
+        self.session = None
 
     #
     # Search for a Wordfeud user
@@ -488,78 +499,47 @@ class Wordfeud:
 
     def _execute(self, url, data=None):
         raise NotImplementedError()
-        # LP TODO adapt to pycurl or port to requests
 
-        #  if not data:
-        #      data = {}
-        #  # Additional headers
-        #  headers = [
-        #      "Accept: application/json",
-        #      "Content-Type: application/json",
-        #      "User-Agent: PHP Wordfeud API 0.2",
-        #  ]
+        if not data:
+            data = {}
 
-        #  # LP port the below to requests
-
-        #  # Do we have a session id available?
-        #  if self.session_id:
-        #      headers.append(f"Cookie: sessionid={self.session_id}")
-
+        url = f"http://game06.wordfeud.com/wf/{url}/"
         #  # cURL Options
         #  opt_array = {
         #      # LP TODO
-        #      # CURLOPT_URL: f"http://game06.wordfeud.com/wf/{url}/",
-        #      # CURLOPT_POST: True,
-        #      # CURLOPT_POSTFIELDS: json_encode(data),
-        #      # CURLOPT_HTTPHEADER: headers,
         #      # CURLINFO_HEADER_OUT: True,
         #      # CURLOPT_RETURNTRANSFER: True,
-        #      # CURLOPT_FOLLOWLOCATION: True,
         #      # CURLOPT_HEADER: True,
+        #
+        #      # LP DONE:
+        #      # CURLOPT_FOLLOWLOCATION: True,
+        #      # CURLOPT_POST: True,
+        #      # CURLOPT_HTTPHEADER: headers,
+        #      # CURLOPT_POSTFIELDS: json_encode(data),
         #  }
 
+        # LP TODO
         #  # Use encoding if possible?
         #  if self.acceptEncoding:
         #      opt_array[CURLOPT_ENCODING] = ""
 
         #  self.debugLog("cURL Options", a)
 
-        #  # Do some cURL magic!
-        #  c = curl_init()
-        #  curl_setopt_array(c, opt_array)
-        #  response = curl_exec(c)
-        #  http_code = curl_getinfo(c, CURLINFO_HTTP_CODE)
-        #  curl_close(c)
+        r = self.session.post(url, json=data)
+        if r.status_code != requests.codes['ok']:
+              raise WordfeudHttpException(r.status_code)
 
-        #  # Did the HTTP request did OK?
-        #  if http_code != 200:
-        #      raise WordfeudHttpException(httpCode)
+        self.debugLog("Headers", r.headers)
+        self.debugLog("Response", r.text)
+        self.debugLog("Cookies", r.cookies)
 
-        #  # Split response content from the headers
-        #  # LP TODO
-        #  headers, json = explode("\r\n\r\n", response, 2)
+        res = r.json()
+        if not isinstance(res, dict):
+            raise WordfeudJsonException("Could not decode JSON")
+        self.debugLog("Decoded JSON", res)
 
-        #  self.debugLog("Headers", headers)
-        #  self.debugLog("Response", json)
+        return res
 
-        #  # Check for a sessionid cookie
-        #  # LP TODO
-        #  if preg_match("/^Set-Cookie:.*sessionid=([^;]*).*;/mi", headers, cookies) > 0:
-
-        #      self.debugLog("Cookies", cookies)
-
-        #      if cookies[1]:
-        #          # Found a session id; save it
-        #          self.session_id = cookies[1]
-
-        #  # JSON Decode
-        #  # LP TODO
-        #  res = json_decode(json, True)
-        #  if not is_array(res):
-        #      raise WordfeudJsonException("Could not decode JSON")
-        #  self.debugLog("Decoded JSON", res)
-
-        #  return res
 
     # LP TODO
     def debugLog(self, title, data):
