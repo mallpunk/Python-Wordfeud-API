@@ -493,8 +493,13 @@ class Wordfeud:
     # @param string password Plain text password
     # @return strong SHA1 hash of the password with added salt
     #
+    # TODO verify if utf-8 is actually the proper encoding. Does WordFeud allow non-ASCII
+    # characters in passwords?
+    #
     def _get_hash(self, password):
-        return sha1(password + 'JarJarBinks9').hexdigest()
+        password += 'JarJarBinks9'  # Add salt
+        password = password.encode('utf-8') # The sha1 function takes a bytes object.
+        return sha1(password).hexdigest()
 
 
     def _execute(self, url, data=None):
