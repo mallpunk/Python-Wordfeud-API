@@ -503,8 +503,6 @@ class Wordfeud:
 
 
     def _execute(self, url, data=None):
-        raise NotImplementedError()
-
         if not data:
             data = {}
 
