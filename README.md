@@ -1,6 +1,9 @@
 Python Wordfeud API
 ================
-The Wordfeud-class helps you communicate with the Wordfeud API servers. I haven't tested all the methods yet and I'm sure there are some API methods I haven't discovered yet.
+Based on the original PHP code (TODO: include link).  Text below for now
+copied verbatim from there; to be adapted for the Python version.
+
+The Wordfeud class helps you communicate with the Wordfeud API servers. I haven't tested all the methods yet and I'm sure there are some API methods I haven't discovered yet.
 
 **Please keep in mind that this is still a work in progress!**
 
