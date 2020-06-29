@@ -39,7 +39,7 @@ class Wordfeud:
         if session_id:
             self.session.cookies['sessionid'] = session_id
         self.accept_encoding = accept_encoding
-        self.debugMode = debug_mode
+        self.debug_mode = debug_mode
 
     #
     # Log in to Wordfeud using an email address and password
@@ -48,7 +48,7 @@ class Wordfeud:
     # @param string password Plain text password
     # @throws WordfuedLogInException If login fails
     #
-    def logInUsingEmail(self, email, password):
+    def login_email(self, email, password):
         url = 'user/login/email'
         data = {
             'email': email,
@@ -67,7 +67,7 @@ class Wordfeud:
     # @param type password Plain text password
     # @throws WordfuedLogInException If login fails
     #
-    def logInUsingId(self, user_id, password):
+    def login_id(self, user_id, password):
         url = 'user/login/id'
         data = {
             'id': int(user_id),
@@ -84,7 +84,7 @@ class Wordfeud:
     #
     # @return string Wordfeud Session ID
     #
-    def getSessionId(self):
+    def get_session_id(self):
         return self.session.cookies.get('sessionid', None)
 
     #
@@ -94,7 +94,7 @@ class Wordfeud:
     # @param string session_id Wordfeud Session ID
     # @return boolean True if the internal value has been changed; False otherwise
     #
-    def setSessionId(self, session_id):
+    def set_session_id(self, session_id):
         if session_id != self.session.cookies.get('sessionid', None):
             self.session.cookies['sessionid'] = session_id
             return True
@@ -106,7 +106,7 @@ class Wordfeud:
     # You'll no longer be able to do any authenticated
     # calls until you login again.
     #
-    def logOut(self):
+    def logout(self):
         self.session.close()
         self.session = None
 
@@ -116,7 +116,7 @@ class Wordfeud:
     # @param string query Username or email address
     # @return array Search results
     #
-    def searchUser(self, query):
+    def search_user(self, query):
         url = 'user/search'
 
         data = {
@@ -136,7 +136,7 @@ class Wordfeud:
     #
     # @return array List of friends
     #
-    def getFriends(self):
+    def get_friends(self):
         url = 'user/relationships'
 
         res = self._execute(url)
@@ -153,7 +153,7 @@ class Wordfeud:
     # @param int type Unknown?
     # @return array
     #
-    def addFriend(self, user_id, friend_type=0):
+    def add_friend(self, user_id, friend_type=0):
         url = 'relationship/create'
 
         data = {
@@ -173,7 +173,7 @@ class Wordfeud:
     #
     # @param int user_id ID of the User your wish to 'unfriend'
     #
-    def deleteFriend(self, user_id):
+    def delete_friend(self, user_id):
         url = f'relationship/{int(user_id)}/delete'
 
         res = self._execute(url)
@@ -188,7 +188,7 @@ class Wordfeud:
     # @param mixed board_type Board Type
     # @return array
     #
-    def inviteRandomOpponent(self, ruleset, board_type=BoardRandom):
+    def invite_random_opponent(self, ruleset, board_type=BoardRandom):
         url = "random_request/create"
 
         # TODO Test if an integer can be passed to the API
@@ -214,7 +214,7 @@ class Wordfeud:
     #
     # @param string image_data Still need to figure out what this string contains?
     #
-    def uploadAvatar(self, image_data):
+    def upload_avatar(self, image_data):
         url = "user/avatar/upload"
 
         # TODO Figure out how to generate this image data from an actual image
@@ -231,11 +231,11 @@ class Wordfeud:
     #
     # Get all of the chat messages from a specific game
     #
-    # @param int gameID Game ID
+    # @param int game_id Game ID
     # @return array
     #
-    def getChatMessages(self, gameID):
-        url = f"game/{int(gameID)}/chat"
+    def get_chat_messages(self, game_id):
+        url = f"game/{int(game_id)}/chat"
 
         res = self._execute(url)
 
@@ -247,12 +247,12 @@ class Wordfeud:
     #
     # Send a chat message in a specific game
     #
-    # @param int gameID Game ID
+    # @param int game_id Game ID
     # @param string message The message you wish to send
     # @return array
     #
-    def sendChatMessage(self, gameID, message):
-        url = f"game/{int(gameID)}/chat/send"
+    def send_chat_message(self, game_id, message):
+        url = f"game/{int(game_id)}/chat/send"
 
         data = {
             "message": message.strip(),
@@ -272,7 +272,7 @@ class Wordfeud:
     # @param int size Size (sizes known to work: 40, 60)
     # @return string
     #
-    def getAvatarUrl(self, user_id, size):
+    def get_avatar_url(self, user_id, size):
         return f"http://avatars.wordfeud.com/{int(size)}/{int(user_id)}"
 
     #
@@ -283,7 +283,7 @@ class Wordfeud:
     # @param string password
     # @return int Your new User ID if successful
     #
-    def createAccount(self, username, email, password):
+    def create_account(self, username, email, password):
         url = 'user/create'
         data = {
             'username': username,
@@ -303,7 +303,7 @@ class Wordfeud:
     #
     # @return array An array with notifications
     #
-    def getNotifications(self):
+    def get_notifications(self):
         url = 'user/notifications'
 
         res = self._execute(url)
@@ -318,7 +318,7 @@ class Wordfeud:
     #
     # @return array An array with statuses
     #
-    def getStatus(self):
+    def get_status(self):
         url = 'user/status'
 
         res = self._execute(url)
@@ -333,7 +333,7 @@ class Wordfeud:
     #
     # @return array An array with games
     #
-    def getGames(self):
+    def get_games(self):
         url = 'user/games'
 
         res = self._execute(url)
@@ -346,11 +346,11 @@ class Wordfeud:
     #
     # Get one game
     #
-    # @param int gameID Game ID
+    # @param int game_id Game ID
     # @return array An array with game data
     #
-    def getGame(self, gameID):
-        url = f'game/{gameID}'
+    def get_game(self, game_id):
+        url = f'game/{game_id}'
 
         res = self._execute(url)
 
@@ -362,11 +362,11 @@ class Wordfeud:
     #
     # Get the layout of a board
     #
-    # @param int boardID
+    # @param int board_id
     # @return array
     #
-    def getBoard(self, boardID):
-        url = f'board/{boardID}'
+    def get_board(self, board_id):
+        url = f'board/{board_id}'
 
         res = self._execute(url)
 
@@ -378,18 +378,17 @@ class Wordfeud:
     #
     # Place a word on the board. This should be much easier.
     #
-    # @param int gameID
-    # @param array gameID
+    # @param int game_id
     # @param array ruleset
     # @param array tiles
     # @param array words
     # @return Object
     #
-    def place(self, gameID, ruleset, tiles, words):
+    def place(self, game_id, ruleset, tiles, words):
         # 'illegal_word', 'illegal_tiles'
         # TODO Have a look at the response
 
-        url = f'game/{gameID}/move'
+        url = f'game/{game_id}/move'
 
         data = {
             'move': tiles,
@@ -402,16 +401,16 @@ class Wordfeud:
         return res
 
     # 'not_your_turn'
-    def skip_turn(self, gameID):
-        url = f'game/{gameID}/pass'
+    def skip_turn(self, game_id):
+        url = f'game/{game_id}/pass'
 
         res = self._execute(url)
 
         return res
 
     # 'not_your_turn', 'game_over'
-    def resign(self, gameID):
-        url = f'game/{gameID}/resign'
+    def resign(self, game_id):
+        url = f'game/{game_id}/resign'
 
         res = self._execute(url)
 
@@ -446,11 +445,11 @@ class Wordfeud:
     #
     # Accept an invite.
     #
-    # @param int inviteID Invite ID
+    # @param int invite_id Invite ID
     #
-    def acceptInvite(self, inviteID):
+    def accept_invite(self, invite_id):
         # 'access_denied'
-        url = f'invite/{inviteID}/accept'
+        url = f'invite/{invite_id}/accept'
 
         res = self._execute(url)
 
@@ -460,11 +459,11 @@ class Wordfeud:
     #
     # Reject an invite.
     #
-    # @param int inviteID Invite ID
+    # @param int invite_id Invite ID
     #
-    def rejectInvite(self, inviteID):
+    def reject_invite(self, invite_id):
         # 'access_denied'
-        url = f'invite/{inviteID}/reject'
+        url = f'invite/{invite_id}/reject'
 
         res = self._execute(url)
 
@@ -476,7 +475,7 @@ class Wordfeud:
     #
     # @param string password New password (plain text)
     #
-    def changePassword(self, password):
+    def change_password(self, password):
         url = 'user/password/set'
         data = {
             'password': self._get_hash(password),
@@ -523,30 +522,30 @@ class Wordfeud:
 
         # LP TODO
         #  # Use encoding if possible?
-        #  if self.acceptEncoding:
+        #  if self.accept_encoding:
         #      opt_array[CURLOPT_ENCODING] = ""
 
-        #  self.debugLog("cURL Options", a)
+        #  self.debug_log("cURL Options", a)
 
         r = self.session.post(url, json=data)
         if r.status_code != requests.codes['ok']:
               raise WordfeudHttpException(r.status_code)
 
-        self.debugLog("Headers", r.headers)
-        self.debugLog("Response", r.text)
-        self.debugLog("Cookies", r.cookies)
+        self.debug_log("Headers", r.headers)
+        self.debug_log("Response", r.text)
+        self.debug_log("Cookies", r.cookies)
 
         res = r.json()
         if not isinstance(res, dict):
             raise WordfeudJsonException("Could not decode JSON")
-        self.debugLog("Decoded JSON", res)
+        self.debug_log("Decoded JSON", res)
 
         return res
 
 
     # LP TODO
-    def debugLog(self, title, data):
-        if self.debugMode:
+    def debug_log(self, title, data):
+        if self.debug_mode:
             title = title.strip()
             output = f"\n\n{title}\n"
             output += len(title) * "-"
