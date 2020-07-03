@@ -4,7 +4,7 @@ import requests
 USER_AGENT = "Python Wordfeud API 0.2"
 
 # Wordfeud API client
-# Based on PHP-Wordfeud-API (TODO url, attribution)
+# Forked and ported from PHP-Wordfeud-API: https://github.com/tsjost/PHP-Wordfeud-API
 class Wordfeud:
 
     # Rule sets
@@ -506,20 +506,6 @@ class Wordfeud:
             data = {}
 
         url = f"http://game06.wordfeud.com/wf/{url}/"
-        #  # cURL Options
-        #  opt_array = {
-        #      # LP TODO
-        #      # CURLINFO_HEADER_OUT: True,
-        #      # CURLOPT_RETURNTRANSFER: True,
-        #      # CURLOPT_HEADER: True,
-        #
-        #      # LP DONE:
-        #      # CURLOPT_FOLLOWLOCATION: True,
-        #      # CURLOPT_POST: True,
-        #      # CURLOPT_HTTPHEADER: headers,
-        #      # CURLOPT_POSTFIELDS: json_encode(data),
-        #  }
-
         # LP TODO
         #  # Use encoding if possible?
         #  if self.accept_encoding:
