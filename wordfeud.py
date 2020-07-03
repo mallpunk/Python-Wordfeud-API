@@ -1,7 +1,11 @@
 from hashlib import sha1
+import logging
 import requests
 
 USER_AGENT = "Python Wordfeud API 0.2"
+
+logger = logging.getLogger('wordfeud_api')
+logger.setLevel(logging.DEBUG)
 
 # Wordfeud API client
 # Forked and ported from PHP-Wordfeud-API: https://github.com/tsjost/PHP-Wordfeud-API
@@ -490,7 +494,7 @@ class Wordfeud:
     # @param string password Plain text password
     # @return strong SHA1 hash of the password with added salt
     #
-    # TODO verify if utf-8 is actually the proper encoding. Does WordFeud allow non-ASCII
+    # LP TODO verify if utf-8 is actually the proper encoding. Does WordFeud allow non-ASCII
     # characters in passwords?
     #
     def _get_hash(self, password):
@@ -521,15 +525,11 @@ class Wordfeud:
         return res
 
 
-    # LP TODO
     def debug_log(self, title, data):
-        if self.debug_mode:
-            title = title.strip()
-            output = f"\n\n{title}\n"
-            output += len(title) * "-"
-            output += f"\n{str(data)}\n\n"
-
-            print(output)
+        title = title.strip()
+        logger.debug(title)
+        logger.debug(len(title) * "-")
+        logger.debug(str(data))
 
 #
 # General exception for the Wordfeud class.
