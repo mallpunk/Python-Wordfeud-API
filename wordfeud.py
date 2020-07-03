@@ -27,10 +27,9 @@ class Wordfeud:
     # Notice that all the parameters are optional.
     #
     # @param string session_id Wordfeud Session ID
-    # @param boolean accept_encoding Set to False to disable any encoding of the HTTP response
     # @param boolean debug_mode Set to True to output debug information on each request
     #
-    def __init__(self, session_id=None, accept_encoding=True, debug_mode=False):
+    def __init__(self, session_id=None, debug_mode=False):
         self.session = requests.Session()
         self.session.headers = {
             "Accept": "application/json",
@@ -38,7 +37,6 @@ class Wordfeud:
         }
         if session_id:
             self.session.cookies['sessionid'] = session_id
-        self.accept_encoding = accept_encoding
         self.debug_mode = debug_mode
 
     #
@@ -506,12 +504,6 @@ class Wordfeud:
             data = {}
 
         url = f"http://game06.wordfeud.com/wf/{url}/"
-        # LP TODO
-        #  # Use encoding if possible?
-        #  if self.accept_encoding:
-        #      opt_array[CURLOPT_ENCODING] = ""
-
-        #  self.debug_log("cURL Options", a)
 
         r = self.session.post(url, json=data)
         if r.status_code != requests.codes['ok']:
