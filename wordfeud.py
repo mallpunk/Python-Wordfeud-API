@@ -176,7 +176,7 @@ class Wordfeud:
     # @param int user_id ID of the User your wish to 'unfriend'
     #
     def delete_friend(self, user_id):
-        url = f'relationship/{int(user_id)}/delete'
+        url = 'relationship/%s/delete' % int(user_id)
 
         res = self._execute(url)
 
@@ -237,7 +237,7 @@ class Wordfeud:
     # @return array
     #
     def get_chat_messages(self, game_id):
-        url = f"game/{int(game_id)}/chat"
+        url = "game/%s/chat" % int(game_id)
 
         res = self._execute(url)
 
@@ -254,7 +254,7 @@ class Wordfeud:
     # @return array
     #
     def send_chat_message(self, game_id, message):
-        url = f"game/{int(game_id)}/chat/send"
+        url = "game/%s/chat/send" % int(game_id)
 
         data = {
             "message": message.strip(),
@@ -275,7 +275,7 @@ class Wordfeud:
     # @return string
     #
     def get_avatar_url(self, user_id, size):
-        return f"http://avatars.wordfeud.com/{int(size)}/{int(user_id)}"
+        return "http://avatars.wordfeud.com/%s/%s" % (int(size), int(user_id))
 
     #
     # Create an account
@@ -352,7 +352,7 @@ class Wordfeud:
     # @return array An array with game data
     #
     def get_game(self, game_id):
-        url = f'game/{game_id}'
+        url = 'game/%s' % game_id
 
         res = self._execute(url)
 
@@ -368,7 +368,7 @@ class Wordfeud:
     # @return array
     #
     def get_board(self, board_id):
-        url = f'board/{board_id}'
+        url = 'board/%s' % board_id
 
         res = self._execute(url)
 
@@ -390,7 +390,7 @@ class Wordfeud:
         # 'illegal_word', 'illegal_tiles'
         # TODO Have a look at the response
 
-        url = f'game/{game_id}/move'
+        url = 'game/%s/move' % game_id
 
         data = {
             'move': tiles,
@@ -404,7 +404,7 @@ class Wordfeud:
 
     # 'not_your_turn'
     def skip_turn(self, game_id):
-        url = f'game/{game_id}/pass'
+        url = 'game/%s/pass' % game_id
 
         res = self._execute(url)
 
@@ -412,7 +412,7 @@ class Wordfeud:
 
     # 'not_your_turn', 'game_over'
     def resign(self, game_id):
-        url = f'game/{game_id}/resign'
+        url = 'game/%s/resign' % game_id
 
         res = self._execute(url)
 
@@ -451,7 +451,7 @@ class Wordfeud:
     #
     def accept_invite(self, invite_id):
         # 'access_denied'
-        url = f'invite/{invite_id}/accept'
+        url = 'invite/%s/accept' % invite_id
 
         res = self._execute(url)
 
@@ -465,7 +465,7 @@ class Wordfeud:
     #
     def reject_invite(self, invite_id):
         # 'access_denied'
-        url = f'invite/{invite_id}/reject'
+        url = 'invite/%s/reject' % invite_id
 
         res = self._execute(url)
 
@@ -507,7 +507,7 @@ class Wordfeud:
         if not data:
             data = {}
 
-        url = f"http://game06.wordfeud.com/wf/{url}/"
+        url = "http://game06.wordfeud.com/wf/%s/" % url
 
         r = self.session.post(url, json=data)
         if r.status_code != requests.codes['ok']:
