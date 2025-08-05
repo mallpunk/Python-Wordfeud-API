@@ -1,60 +1,115 @@
-Python Wordfeud API
-================
-Based on the original PHP code (TODO: include link).  Text below for now
-copied verbatim from there; to be adapted for the Python version.
+# Python Wordfeud API
 
-The Wordfeud class helps you communicate with the Wordfeud API servers. I haven't tested all the methods yet and I'm sure there are some API methods I haven't discovered yet.
+A Python client for the Wordfeud API, based on the original PHP code. This package provides a comprehensive interface to interact with Wordfeud's game servers.
 
-**Please keep in mind that this is still a work in progress!**
+## Features
 
-Example
--------
-```php
-<?php
-require_once("Wordfeud.php");
+- **Authentication**: Login with email/password or user ID
+- **User Management**: Search users, manage friends, upload avatars
+- **Game Management**: Create games, make moves, manage invites
+- **Rating System**: Retrieve personal ratings by language and board type
+- **Chat System**: Send and receive chat messages
+- **Multiple Languages**: Support for various Wordfeud rule sets
 
-$WF = new Wordfeud();
+## Installation
 
-try {
-    // Log in with an existing account
-    $WF->logInUsingEmail("TEST EMAIL", "TEST PASSWORD");
-
-    // Show your Wordfeud Session ID
-    echo "Session ID: " . $WF->getSessionId() . "<br />";
-
-    // Search for a user by username or email address
-    $searchResults = $WF->searchUser("RandomUser");
-
-    // Check search results
-    if (count($searchResults) > 0) {
-        $usr = $searchResults[0];
-        echo "Found a user called <b>" . $usr['username'] . "</b> ";
-        echo "(user id: " . $usr['user_id'] . ").<br />";
-    } else {
-        echo "User not found!<br />";
-    }
-
-    // Request game with a random opponent
-    $request = $WF->inviteRandomOpponent(Wordfeud::RuleSetDutch, Wordfeud::BoardRandom);
-    echo "Request sent!<br /><pre>";
-    var_dump($request);
-    echo "</pre>";
-
-    // Log out (not really necessary)
-    $WF->logOut();
-}
-catch (WordfeudLogInException $ex) {
-    echo "Authentication failed!";
-}
-catch (WordfeudHttpException $ex) {
-    echo "Server did respond with HTTP status code 200 (OK)";
-}
-catch (WordfeudJsonException $ex) {
-    echo "Could not decode JSON data received from the server";
-}
-catch (WordfeudException $ex) {
-    echo "The following error occured: " . $ex->getMessage();
-}
+### From PyPI (when published)
+```bash
+pip install wordfeud-api
 ```
 
-*Please see the PHPdoc for more information.*
+### From GitHub
+```bash
+pip install git+https://github.com/mallpunk/Python-Wordfeud-API.git
+```
+
+### Development Installation
+```bash
+git clone https://github.com/mallpunk/Python-Wordfeud-API.git
+cd Python-Wordfeud-API
+pip install -e .
+```
+
+## Quick Start
+
+```python
+from wordfeud_api import Wordfeud
+
+# Create client
+wf = Wordfeud()
+
+# Login
+wf.login_email("your_email@example.com", "your_password")
+
+# Search for users
+results = wf.search_user("some_username")
+
+# Get your games
+games = wf.get_games()
+
+# Get your current rating (Norwegian, Standard board)
+current_rating = wf.get_current_rating(ruleset=1, board_type=0)
+print(f"Current Rating: {current_rating['rating']}")
+
+# Get rating statistics
+stats = wf.get_rating_stats(ruleset=1, board_type=0)
+print(f"Average Rating: {stats['average_rating']}")
+```
+
+## Rating System
+
+The API supports retrieving ratings for different languages and board types:
+
+```python
+# Norwegian (Bokmål), Standard board
+norwegian_rating = wf.get_current_rating(ruleset=1, board_type=0)
+
+# Dutch, Random board  
+dutch_rating = wf.get_current_rating(ruleset=2, board_type=1)
+
+# Get all ratings for a specific combination
+ratings = wf.get_ratings(ruleset=1, board_type=0)
+```
+
+## Available Rule Sets
+
+- `0`: American
+- `1`: Norwegian (Bokmål)
+- `2`: Dutch
+- `3`: Danish
+- `4`: Swedish
+- `5`: English
+- `6`: Spanish
+- `7`: French
+
+## Available Board Types
+
+- `0`: Normal (Standard)
+- `1`: Random
+
+## Error Handling
+
+The API provides specific exception classes:
+
+```python
+from wordfeud_api import WordfeudException, WordfeudLogInException
+
+try:
+    wf.login_email("email", "password")
+except WordfeudLogInException as e:
+    print(f"Login failed: {e}")
+except WordfeudException as e:
+    print(f"API error: {e}")
+```
+
+## Development
+
+This is still a work in progress! The API is based on reverse engineering and may not include all available endpoints.
+
+## License
+
+This project is licensed under the MIT License.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
