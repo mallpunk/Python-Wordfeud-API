@@ -146,7 +146,7 @@ class Wordfeud:
         if res["status"] != "success":
             raise WordfeudException(res["content"]["type"])
         else:
-            return res["content"].relationships
+            return res["content"]["relationships"]
 
     #
     # Add a user to your list of friends (relationships)
@@ -530,6 +530,83 @@ class Wordfeud:
         logger.debug(title)
         logger.debug(len(title) * "-")
         logger.debug(str(data))
+
+    #
+    # Get your rating information from finished games
+    #
+    # @param int ruleset Optional ruleset filter (1=Norwegian, 2=Dutch, etc.)
+    # @param int board_type Optional board type filter (0=normal, 1=random)
+    # @return array List of games with your rating information
+    #
+    def get_ratings(self, ruleset=None, board_type=None):
+        url = 'user/games'
+
+        res = self._execute(url)
+
+        if res["status"] != "success":
+            raise WordfeudException(res["content"]["type"])
+        else:
+            games = res["content"]["games"]
+            # Filter for games with rating information (finished games)
+            games_with_ratings = []
+            for game in games:
+                if game.get('rating') is not None:
+                    # Apply optional filters
+                    if ruleset is not None and game.get('ruleset') != ruleset:
+                        continue
+                    if board_type is not None and game.get('board') != board_type:
+                        continue
+                    games_with_ratings.append(game)
+            return games_with_ratings
+
+    #
+    # Get your current rating (from most recent finished game)
+    #
+    # @param int ruleset Optional ruleset filter (1=Norwegian, 2=Dutch, etc.)
+    # @param int board_type Optional board type filter (0=normal, 1=random)
+    # @return dict Your rating information or None if no finished games
+    #
+    def get_current_rating(self, ruleset=None, board_type=None):
+        ratings = self.get_ratings(ruleset, board_type)
+        if ratings:
+            # Return the most recent game (highest game ID)
+            most_recent = max(ratings, key=lambda x: x.get('id', 0))
+            return {
+                'rating': most_recent.get('rating'),  # Your rating after this game
+                'rating_delta': most_recent.get('rating_delta'),  # Your rating change
+                'game_id': most_recent.get('id'),
+                'finished': most_recent.get('end_game', 0) > 0,
+                'ruleset': most_recent.get('ruleset'),
+                'board': most_recent.get('board')
+            }
+        return None
+
+    #
+    # Get your rating statistics
+    #
+    # @param int ruleset Optional ruleset filter (1=Norwegian, 2=Dutch, etc.)
+    # @param int board_type Optional board type filter (0=normal, 1=random)
+    # @return dict Your rating statistics
+    #
+    def get_rating_stats(self, ruleset=None, board_type=None):
+        ratings = self.get_ratings(ruleset, board_type)
+        if not ratings:
+            return None
+        
+        rating_values = [game.get('rating', 0) for game in ratings]
+        delta_values = [game.get('rating_delta', 0) for game in ratings]
+        
+        return {
+            'total_games': len(ratings),
+            'current_rating': max(rating_values) if rating_values else None,
+            'lowest_rating': min(rating_values) if rating_values else None,
+            'average_rating': sum(rating_values) / len(rating_values) if rating_values else None,
+            'biggest_gain': max(delta_values) if delta_values else None,
+            'biggest_loss': min(delta_values) if delta_values else None,
+            'total_change': sum(delta_values) if delta_values else None,
+            'ruleset': ruleset,
+            'board_type': board_type
+        }
 
 #
 # General exception for the Wordfeud class.
